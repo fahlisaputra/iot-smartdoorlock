@@ -273,7 +273,8 @@ app.post('/api/v1/device/request-pairing', async (req, res) => {
 		pairing_completed_at: null,
 		status: 'pairing',
 		door_status: 'locked',
-		online: false
+		online: false,
+		add_card: false,
 	});
 
 	res.status(200);
@@ -338,6 +339,7 @@ app.get('/api/v1/device/:token', async (req, res) => {
 			status: doc.data().status,
 			door_status: doc.data().door_status,
 			online: doc.data().online,
+			add_card: doc.data().add_card,
 		}
 	});
 });
