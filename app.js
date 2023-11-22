@@ -72,7 +72,7 @@ websocket.on('request', function (request) {
 					if (data.length > 1) {
 						const topic = token;
 
-						const message = {
+						const message_notif = {
 							notification: {
 								title: 'Pintu Terbuka',
 								body: 'Pintu terbuka oleh ' + data[1],
@@ -81,7 +81,7 @@ websocket.on('request', function (request) {
 						};
 
 						// Send a message to devices subscribed to the provided topic.
-						getMessaging().send(message)
+						getMessaging().send(message_notif)
 							.then((response) => {
 							})
 							.catch((error) => {
