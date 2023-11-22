@@ -398,6 +398,81 @@ app.get('/api/v1/device/:token/add-card', async (req, res) => {
 	});
 });
 
+// set name for card
+app.get('/api/v1/device/:token/card/:card/set-name/:name', async (req, res) => {
+	let bearerToken = req.headers.authorization;
+
+	if (!bearerToken) {
+		res.status(401);
+		return res.send({
+			success: false,
+			status: 'UNAUTHORIZED',
+			data: null
+		});
+	}
+
+	// remove bearer
+	if (bearerToken) {
+		bearerToken = bearerToken.split(' ');
+		if (bearerToken.length > 1) {
+			bearerToken = bearerToken[1];
+		}
+	}
+
+	const { token } = req.params;
+	const docRef = db.collection('devices').doc(token);
+	const doc = await docRef.get();
+
+	if (!doc.exists) {
+		res.status(404);
+		return res.send({
+			success: false,
+			status: 'NOT_FOUND',
+			data: null
+		});
+	}
+
+	if (sha256(doc.data().device_id) !== bearerToken) {
+		res.status(401);
+		return res.send({
+			success: false,
+			status: 'UNAUTHORIZED',
+			data: null
+		});
+	}
+
+	const { card, name } = req.params;
+	const cards = doc.data().cards;
+	let cardIndex = -1;
+	cards.forEach((item, index) => {
+		if (item.card == card) {
+			cardIndex = index;
+		}
+	});
+
+	if (cardIndex == -1) {
+		res.status(404);
+		return res.send({
+			success: false,
+			status: 'NOT_FOUND',
+			data: null
+		});
+	}
+
+	cards[cardIndex].name = name;
+
+	await docRef.update({
+		cards: cards,
+	});
+
+	res.status(200);
+	return res.send({
+		success: true,
+		status: 'OK',
+		data: null
+	});
+});
+
 // lock door
 app.post('/api/v1/device/:token/lock', async (req, res) => {
 	let bearerToken = req.headers.authorization;
