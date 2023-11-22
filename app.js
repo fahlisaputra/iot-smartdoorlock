@@ -1,12 +1,12 @@
 const Firestore = require('@google-cloud/firestore');
-// const InitializeApp = require('firebase').initializeApp;
-// const getMessaging = require('firebase').messaging;
+const InitializeApp = require('firebase').initializeApp;
+const getMessaging = require('firebase').messaging;
 
-// // load firebase config
-// const firebaseConfig = require('./config/firebase_config.json');
-// const firebaseApp = InitializeApp(firebaseConfig);
+// load firebase config
+const firebaseConfig = require('./config/firebase_config.json');
+const firebaseApp = InitializeApp(firebaseConfig);
 
-// const Messaging = getMessaging(firebaseApp);
+const Messaging = getMessaging(firebaseApp);
 
 const db = new Firestore({
 	projectId: 'fahli-smartdoorlock',
@@ -70,7 +70,22 @@ websocket.on('request', function (request) {
 				} else if (message.utf8Data.startsWith('UNLOCKED')) {
 					const data = message.utf8Data.split(' ');
 					if (data.length > 1) {
+						const topic = token;
 
+						const message = {
+							notification: {
+								title: 'Pintu Terbuka',
+								body: 'Pintu terbuka oleh ' + data[1],
+							},
+							topic: topic
+						};
+
+						// Send a message to devices subscribed to the provided topic.
+						getMessaging().send(message)
+							.then((response) => {
+							})
+							.catch((error) => {
+							});
 					}
 					unlockDoor(token);
 
