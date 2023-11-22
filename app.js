@@ -1,12 +1,12 @@
 const Firestore = require('@google-cloud/firestore');
-const InitializeApp = require('firebase').initializeApp;
-const getMessaging = require('firebase').getMessaging;
 
-// load firebase config
-const firebaseConfig = require('./config/firebase_config.json');
-const firebaseApp = InitializeApp(firebaseConfig);
+var admin = require("firebase-admin");
 
-const Messaging = getMessaging(firebaseApp);
+var serviceAccount = require("./config/firebase_admin.json");
+
+const FCM_PUSH = admin.initializeApp({
+	credential: admin.credential.cert(serviceAccount)
+});
 
 const db = new Firestore({
 	projectId: 'fahli-smartdoorlock',
@@ -81,11 +81,9 @@ websocket.on('request', function (request) {
 						};
 
 						// Send a message to devices subscribed to the provided topic.
-						getMessaging().send(message_notif)
-							.then((response) => {
-							})
-							.catch((error) => {
-							});
+						firebase.messaging().send(message).then((response) => {
+						}).catch((error) => {
+						});
 					}
 					unlockDoor(token);
 
