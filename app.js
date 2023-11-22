@@ -1,6 +1,6 @@
 const Firestore = require('@google-cloud/firestore');
 const InitializeApp = require('firebase').initializeApp;
-const getMessaging = require('firebase').messaging;
+const getMessaging = require('firebase').getMessaging;
 
 // load firebase config
 const firebaseConfig = require('./config/firebase_config.json');
